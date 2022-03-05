@@ -46,5 +46,4 @@ def arithmetic_arranger(problems, bool_v=False):
     if not bool_v:
         return f"{statement[0]}\n{statement[1]}\n{statement[2]}"
 
- 
 arithmetic_arranger(['11 + 4', '3801 - 2999', '1 + 2', '123 + 49', '1 - 9380'], True)
