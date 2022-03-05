@@ -1,6 +1,6 @@
 https://www.freecodecamp.org/learn/scientific-computing-with-python/#python-for-everybody
 
-Completed 5 projects for the Scientific Computing with Python on FreeCode Camp
+Completed 5 projects for the Scientific Computing with Python on FreeCode Camp. The course is available using the link above.
 
 Arithmetic Formatter
 Formatting simple arithmetic using string methods.
