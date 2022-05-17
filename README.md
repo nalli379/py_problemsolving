@@ -1,2 +1,2 @@
 # py_problemsolving
-Collection of algorithms designed to solve online tasks
+Collection of algorithms written for various projects
