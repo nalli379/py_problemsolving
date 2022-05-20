@@ -22,8 +22,6 @@
 import random
 
 
-
-
 #MONEY
 #player starts with 5000 per game
 playerMoneyPot = 5000
@@ -52,14 +50,14 @@ def createDeck():
         for j in allcardsTemplate:
             new_deck.append((i, j))
     
-    # random.shuffle(new_deck)
+    for i in range(3):
+        random.shuffle(new_deck)
     
     return new_deck
 
 playDeck = createDeck()
 
 
-#store points values for all the cards!!!
 
 #need a function that iterates over the playdeck to pull out points value and match it to dictionary value
 #need to create a dictionary storing all values for cards
@@ -81,6 +79,55 @@ def createcardPoints():
 
 testpoints = createcardPoints()
 
+
+
+playerHand = []
+dealerHand = []
+playerpoints = 0
+dealerpoints = 0
+
+#DEAL
+#for both player and dealer
+def dealCards(playerHand, dealerHand, playDeck):
+    
+    table = [playerHand, dealerHand]
+    
+    for hand in table:
+        
+        while len(hand) < 2:
+            hand.append(playDeck.pop())
+
+    
+    return playerHand, dealerHand, playDeck
+
+dealCards(playerHand, dealerHand, playDeck)
+
+
+#add points from hand to player/dealer total
+
+def scoreCard(playerHand, dealerHand, playerpoints, dealerpoints):
+    #check length of hand is 2, if not add a card
+    pass
+
+    #score top card in player/dealer hand to player/dealer points
+
+    #show top card in player/dealer hand
+    
+
+    pass
+
+
+#show 1 card from hand
+
+
+
+
+
+#score points for card in hand in ("suit", "card point value")
+#testcards = [("hearts", 5)]
+
+
+
 #BETTING
 #check is the player money > 0
 #ask player how much to bet per round
@@ -95,8 +142,6 @@ testpoints = createcardPoints()
         #else subtract bet value to the player money total 
 #if the dealer/player draw
     #no change to value of player money total
-
-
 
 
 #PLAY GAME
