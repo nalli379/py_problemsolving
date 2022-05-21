@@ -65,7 +65,9 @@ playDeck = createDeck()
 def createcardPoints():
     cardPoints = {}
     specialcards = ["Jack", "Queen", "King"]
-    ace_card = [1, 11]
+    ace_card = 0
+
+    cardPoints["Ace"] = 0
 
     for i in range(2, 11):
         cardPoints[i] = i
@@ -73,8 +75,6 @@ def createcardPoints():
     for j in specialcards:
         cardPoints[j] = 10
 
-    cardPoints["Ace"] = ace_card
-    
     return cardPoints
 
 testpoints = createcardPoints()
@@ -104,24 +104,28 @@ dealCards(playerHand, dealerHand, playDeck)
 
 
 #add points from hand to player/dealer total
-
-def scoreCard(playerHand, dealerHand, playerpoints, dealerpoints):
-    #check length of hand is 2, if not add a card
-    pass
-
-    #score top card in player/dealer hand to player/dealer points
-
-    #show top card in player/dealer hand
+#score top card in player/dealer hand to player/dealer points
+def scoreCard(playerHand, dealerHand, playerpoints, dealerpoints, pointsDict):
     
+    table = [playerHand, dealerHand]
+    tablePoints = [playerpoints, dealerpoints]
 
-    pass
-
-
-#show 1 card from hand
-
-
-
-
+    for i in range(len(table)):
+        scoreCard = table[i].pop(0)
+        
+        points = pointsDict.get(scoreCard[1])
+        
+        if scoreCard[i] == 'Ace':
+            if tablePoints[i] + 11 <= 21:
+                tablePoints[i] += 11
+            else:
+                tablePoints[i] += 1
+            
+        else:
+            tablePoints[i] += points
+    
+    return playerHand, dealerHand, playerpoints, dealerpoints
+        
 
 #score points for card in hand in ("suit", "card point value")
 #testcards = [("hearts", 5)]
