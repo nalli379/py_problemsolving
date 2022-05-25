@@ -95,7 +95,7 @@ def scoreCard(table, tablePoints, pointsDict):
 
 
 
-#SHOW card FIFO order for table
+#SHOW card FIFO order for table --> need to sort input (dealt cards)
 def showCards(table):
     
     #SUITS
@@ -107,35 +107,65 @@ def showCards(table):
     player, dealer = table
     
     return None
+  
+# test = [[('Spades', 'Ace')], [('Clubs', 2)]]
+# showCards(test)
+
+
+def doubleDownInput(valid_input, playerMoneyPot):
     
-test = [[('Spades', 'Ace')], [('Clubs', 2)]]
-showCards(test)
+    if (playerMoneyPot - (valid_input * 2) <= 0):
+        print('here')
+        return valid_input, playerMoneyPot
+    
+    while True:
+        
+        try:
+            valid_bet = (input("Do you want to double your bet? y/n ")).lower()
+            assert(valid_bet == "y" or valid_bet == "n")
+            
+        except (AssertionError, ValueError):
+            print("Sorry, please enter y (yes) or n (no)")
+
+        else:
+            
+            if valid_bet == "y":
+                valid_input *= 2
+         
+            playerMoneyPot -= valid_input
+            
+            
+            return valid_input, playerMoneyPot
 
 
 
-
-def playerBet(playerMoneyPot):
+def playerBetInput(playerMoneyPot):
     
     if playerMoneyPot <= 0:
         return 0
-    
-    else:
+
         
-        while True:
+    while True:
+        
+        try:
+            valid_input = int((input("How much do you want to bet? ")))
+            assert(playerMoneyPot - valid_input >= 0 and valid_input > 0)
             
-            try:
-                valid_input = int((input("How much do you want to bet? ")))
-                assert(playerMoneyPot - valid_input >= 0 and valid_input > 0)
-                
-            except (AssertionError, ValueError):
-                print("Sorry, please enter a number between 1 - 5000")
+        except (AssertionError, ValueError):
+            print("Sorry, please enter a number between 1 - 5000")
 
-            else:
-                playerMoneyPot -= valid_input                
-                return valid_input, playerMoneyPot 
+        else:
+            
+            playerBet, playerMoneyPot = doubleDownInput(valid_input, playerMoneyPot)
+            
+            
+            playerMoneyPot -= valid_input              
+            return valid_input, playerMoneyPot
 
 
-playerBet(5000)
+
+
+
 
 
 
@@ -181,9 +211,10 @@ def main():
     (mainTable, mainTablePoints, mainplayDeck) = new_game()
     
     #bet 
+    (playerBet, playerMoneyPot) = playerBetInput(playerMoneyPot)
     
+
     (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
-    
     
     
     return 0
@@ -194,9 +225,7 @@ def main():
 
 
 #BETTING
-#check is the player money > 0
-#ask player how much to bet per round
-#store bet value per game
+
 #if the player wins the round
     #check if double down is true/false
         #if dd is true, add double bet money value to player money total 
@@ -217,9 +246,9 @@ def main():
 #ask player if they want to double down
     #if yes, doubledown = true
 
+
 #NEW DEAL
 #does the player want to play or stay
-
     #if player wants to play
         #ask player if they want to play a card
             #if yes, reveal card[1] in card pile
