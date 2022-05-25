@@ -18,22 +18,10 @@
 #if you doubledown --> win bet money * 2
 #if you have no money to make bet, out game
 
-
 import random
 
 
-#MONEY
-#player starts with 5000 per game
-playerMoneyPot = 5000
 
-#SUITS
-hearts = chr(9829)
-diamonds = chr(9830)
-spades = chr(9824)
-clubs = chr(9827)
-
-
-#create a deck 
 def createDeck():
     new_deck = []
     allcardsTemplate = []
@@ -55,13 +43,9 @@ def createDeck():
     
     return new_deck
 
-playDeck = createDeck()
 
 
-
-#need a function that iterates over the playdeck to pull out points value and match it to dictionary value
-#need to create a dictionary storing all values for cards
-
+#dictionary to store/retrieve points value for card deck
 def createcardPoints():
     cardPoints = {}
     specialcards = ["Jack", "Queen", "King"]
@@ -77,39 +61,22 @@ def createcardPoints():
 
     return cardPoints
 
-testpoints = createcardPoints()
 
 
-
-playerHand = []
-dealerHand = []
-playerpoints = 0
-dealerpoints = 0
-
-#DEAL
-#for both player and dealer
-def dealCards(playerHand, dealerHand, playDeck):
-    
-    table = [playerHand, dealerHand]
+#DEAL for table
+def dealCards(table, playDeck):
     
     for hand in table:
-        
         while len(hand) < 2:
             hand.append(playDeck.pop())
 
+    return table, playDeck
+
+
+
+#score card FIFO order for table
+def scoreCard(table, tablePoints, pointsDict):
     
-    return playerHand, dealerHand, playDeck
-
-dealCards(playerHand, dealerHand, playDeck)
-
-
-#add points from hand to player/dealer total
-#score top card in player/dealer hand to player/dealer points
-def scoreCard(playerHand, dealerHand, playerpoints, dealerpoints, pointsDict):
-    
-    table = [playerHand, dealerHand]
-    tablePoints = [playerpoints, dealerpoints]
-
     for i in range(len(table)):
         scoreCard = table[i].pop(0)
         
@@ -124,11 +91,105 @@ def scoreCard(playerHand, dealerHand, playerpoints, dealerpoints, pointsDict):
         else:
             tablePoints[i] += points
     
-    return playerHand, dealerHand, playerpoints, dealerpoints
-        
+    return table, tablePoints
 
-#score points for card in hand in ("suit", "card point value")
-#testcards = [("hearts", 5)]
+
+
+#SHOW card FIFO order for table
+def showCards(table):
+    
+    #SUITS
+    hearts = chr(9829)
+    diamonds = chr(9830)
+    spades = chr(9824)
+    clubs = chr(9827)
+    
+    player, dealer = table
+    
+    return None
+    
+test = [[('Spades', 'Ace')], [('Clubs', 2)]]
+showCards(test)
+
+
+
+
+def playerBet(playerMoneyPot):
+    
+    if playerMoneyPot <= 0:
+        return 0
+    
+    else:
+        
+        while True:
+            
+            try:
+                valid_input = int((input("How much do you want to bet? ")))
+                assert(playerMoneyPot - valid_input >= 0 and valid_input > 0)
+                
+            except (AssertionError, ValueError):
+                print("Sorry, please enter a number between 1 - 5000")
+
+            else:
+                playerMoneyPot -= valid_input                
+                return valid_input, playerMoneyPot 
+
+
+playerBet(5000)
+
+
+
+#EXECUTION 
+def new_game():
+    
+    playerHand = []
+    dealerHand = []
+    playerpoints = 0
+    dealerpoints = 0
+
+    #data structures for player/dealer for hand/points
+    table = [playerHand, dealerHand]
+    tablePoints = [playerpoints, dealerpoints]
+    
+    #create a new deck
+    playDeck = createDeck()
+    
+    return (table, tablePoints, playDeck)
+
+
+
+def playCards(table, tablePoints, playDeck, cardPointsDict):
+    
+    #deal cards
+    table, playDeck = dealCards(table, playDeck)
+        
+    #add points to player/dealer hand
+    table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
+    
+    return table, tablePoints, playDeck
+
+
+
+def main():
+    
+    #dict stores card point values
+    cardPointsDict = createcardPoints()
+
+    #player starts with 5000 for main game
+    playerMoneyPot = 5000
+    
+    (mainTable, mainTablePoints, mainplayDeck) = new_game()
+    
+    #bet 
+    
+    (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
+    
+    
+    
+    return 0
+
+
+# main()
 
 
 
@@ -149,10 +210,6 @@ def scoreCard(playerHand, dealerHand, playerpoints, dealerpoints, pointsDict):
 
 
 #PLAY GAME
-#new deck created 
-#create empy totals for player/dealer
-#create card pile fo player/dealer
-
 #put two cards on each pile
 #show one card card[0]
 #show card face up/one card face down for player/dealer in illustration
