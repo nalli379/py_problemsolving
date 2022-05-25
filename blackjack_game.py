@@ -63,6 +63,51 @@ def createcardPoints():
 
 
 
+def doubleDownInput(valid_input, playerMoneyPot):
+    
+    if (playerMoneyPot - (valid_input * 2) <= 0):
+        return valid_input, playerMoneyPot
+    
+    while True:
+        
+        try:
+            valid_bet = (input("Do you want to double your bet? y/n ")).lower()
+            assert(valid_bet == "y" or valid_bet == "n")
+            
+        except (AssertionError, ValueError):
+            print("Sorry, please enter y (yes) or n (no)")
+
+        else:
+            
+            if valid_bet == "y":
+                valid_input *= 2
+            
+            return valid_input, playerMoneyPot
+
+
+
+def playerBetInput(playerMoneyPot):
+    
+    if playerMoneyPot <= 0:
+        return 0
+  
+    while True:
+        
+        try:
+            valid_input = int((input("How much do you want to bet? ")))
+            assert(playerMoneyPot - valid_input >= 0 and valid_input > 0)
+            
+        except (AssertionError, ValueError):
+            print("Sorry, please enter a number between 1 - 5000")
+
+        else:
+            
+            playerBet, playerMoneyPot = doubleDownInput(valid_input, playerMoneyPot)
+                    
+            return playerBet, playerMoneyPot
+
+
+
 #DEAL for table
 def dealCards(table, playDeck):
     
@@ -112,55 +157,10 @@ def showCards(table):
 # showCards(test)
 
 
-def doubleDownInput(valid_input, playerMoneyPot):
-    
-    if (playerMoneyPot - (valid_input * 2) <= 0):
-        print('here')
-        return valid_input, playerMoneyPot
-    
-    while True:
-        
-        try:
-            valid_bet = (input("Do you want to double your bet? y/n ")).lower()
-            assert(valid_bet == "y" or valid_bet == "n")
-            
-        except (AssertionError, ValueError):
-            print("Sorry, please enter y (yes) or n (no)")
-
-        else:
-            
-            if valid_bet == "y":
-                valid_input *= 2
-         
-            playerMoneyPot -= valid_input
-            
-            
-            return valid_input, playerMoneyPot
 
 
-
-def playerBetInput(playerMoneyPot):
-    
-    if playerMoneyPot <= 0:
-        return 0
-
-        
-    while True:
-        
-        try:
-            valid_input = int((input("How much do you want to bet? ")))
-            assert(playerMoneyPot - valid_input >= 0 and valid_input > 0)
-            
-        except (AssertionError, ValueError):
-            print("Sorry, please enter a number between 1 - 5000")
-
-        else:
-            
-            playerBet, playerMoneyPot = doubleDownInput(valid_input, playerMoneyPot)
-            
-            
-            playerMoneyPot -= valid_input              
-            return valid_input, playerMoneyPot
+#get move function
+#asks the user to either 'hit' or 'stand'
 
 
 
@@ -202,19 +202,29 @@ def playCards(table, tablePoints, playDeck, cardPointsDict):
 
 def main():
     
-    #dict stores card point values
-    cardPointsDict = createcardPoints()
-
     #player starts with 5000 for main game
     playerMoneyPot = 5000
     
+    #dict stores card point values
+    cardPointsDict = createcardPoints()
+
+    #create structures to store player/dealer hand, points and playdeck
     (mainTable, mainTablePoints, mainplayDeck) = new_game()
     
     #bet 
     (playerBet, playerMoneyPot) = playerBetInput(playerMoneyPot)
     
-
+    #start play
     (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
+    
+    #get next moves?
+    #in a while loop continues to play game
+    #each round checks if there is a win/lose situation
+    
+    #round result
+    
+    
+    
     
     
     return 0
@@ -224,18 +234,25 @@ def main():
 
 
 
+
+
+
+
 #BETTING
 
+#double down added to playerbet total
+#when player makes bet, money is checked against player total but not substracted
+
 #if the player wins the round
-    #check if double down is true/false
-        #if dd is true, add double bet money value to player money total 
-        #else add bet value to the player money total 
+    #add bet money
+    
 #if the player loses the round
-    #check if double down is true/false
-        #if dd is false, subtract double bet money value to player money total 
-        #else subtract bet value to the player money total 
+    #subtract bet money
+    
 #if the dealer/player draw
-    #no change to value of player money total
+    #do nothing
+
+
 
 
 #PLAY GAME
