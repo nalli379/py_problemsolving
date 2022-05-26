@@ -124,6 +124,8 @@ def scoreCard(table, tablePoints, pointsDict):
     
     for i in range(len(table)):
         scoreCard = table[i].pop(0)
+        print(f'scorecard:{scoreCard}')
+        #need to put the score cards in a separate pile to display
         
         points = pointsDict.get(scoreCard[1])
         
@@ -157,16 +159,53 @@ def showCards(table):
 # showCards(test)
 
 
+def playerMoveInput():
+    
+    while True:
+        
+        try:
+            valid_move = (input("Do you want to 'hit' or 'stay'? h/s ")).lower()
+            assert(valid_move == "h" or valid_move == "s")
+            
+        except (AssertionError, ValueError):
+            print("Sorry, please enter h (hit) or s (stay)")
+
+        else:
+            if valid_move == "h":
+                return True
+            
+            else:
+                return False
 
 
-#get move function
-#asks the user to either 'hit' or 'stand'
-
-
-
-
-
-
+    
+def getMove(table, tablePoints, playDeck, cardPointsDict):
+    
+    while True:
+        valid_move = playerMoveInput()
+        
+        #test that dealer has not gone over 17
+        #test that player has not gone over 21
+        
+        if valid_move:
+            
+            print('hit')
+            
+            table, playDeck = dealCards(table, playDeck)
+        
+            table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
+            
+            print(f"getmove table: {table}")
+            print(f"getmove tablepoints: {tablePoints}")
+        
+        else:
+            print('stay')
+            break
+    
+    #calculate final points to declare win/draw/lose
+    return 0
+    
+    
 
 
 #EXECUTION 
@@ -196,6 +235,7 @@ def playCards(table, tablePoints, playDeck, cardPointsDict):
     #add points to player/dealer hand
     table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
     
+    
     return table, tablePoints, playDeck
 
 
@@ -213,33 +253,25 @@ def main():
     
     #bet 
     (playerBet, playerMoneyPot) = playerBetInput(playerMoneyPot)
+
     
     #start play
     (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
     
-    #get next moves?
-    #in a while loop continues to play game
-    #each round checks if there is a win/lose situation
+    print(f"main table: {mainTable}")
+    print(f"tablepoints: {mainTablePoints}")
     
-    #round result
-    
-    
-    
-    
+    result = getMove(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
+        
     
     return 0
 
 
-# main()
-
-
-
-
+main()
 
 
 
 #BETTING
-
 #double down added to playerbet total
 #when player makes bet, money is checked against player total but not substracted
 
@@ -261,21 +293,20 @@ def main():
 #show card face up/one card face down for player/dealer in illustration
     #add points to player/dealer total
 #ask player if they want to double down
-    #if yes, doubledown = true
+    #if yes, double total 
 
 
 #NEW DEAL
 #does the player want to play or stay
     #if player wants to play
-        #ask player if they want to play a card
-            #if yes, reveal card[1] in card pile
-            #add points to player total
-            #create new deal
+        #reveal card[1] in card pile
+        #add points to player total
+        #create new deal
             
-        #if dealer total < 17, dealer plays a card
-            #if yes, reveal card[1] in card pile
-            #add points to dealer total
-            #create new deal
+    #if dealer total < 17, dealer plays a card
+        #if yes, reveal card[1] in card pile
+        #add points to dealer total
+        #create new deal
 
     #if player wants to stay
         #check dealer is < 17
