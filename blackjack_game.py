@@ -20,8 +20,6 @@
 
 import random
 
-
-
 def createDeck():
     new_deck = []
     allcardsTemplate = []
@@ -103,6 +101,8 @@ def playerBetInput(playerMoneyPot):
         else:
             
             playerBet, playerMoneyPot = doubleDownInput(valid_input, playerMoneyPot)
+            
+            print(f"Player is betting: £{playerBet}")
                     
             return playerBet, playerMoneyPot
 
@@ -119,13 +119,30 @@ def dealCards(table, playDeck):
 
 
 
-#score card FIFO order for table
+def showScoreCards(scoreCard):
+    
+    #SUITS
+    suitDict = {"Hearts": chr(9829), "Diamonds": chr(9830), "Spades": chr(9824), "Clubs": chr(9827)}
+    rows = ['', '', '', '', '']
+    
+    suit, rank = scoreCard
+    rows[0] += ' ___  '
+    rows[1] += f'|{(str(rank)[0]).ljust(2)} | '
+    rows[2] += f'| {suitDict.get(suit)} | '
+    rows[3] += f'|_{(str(rank)[0]).rjust(2)}| '
+
+    for row in rows:
+        print(row)
+
+
+
+#show the current score and card for player, dealer
 def scoreCard(table, tablePoints, pointsDict):
+    
+    tableList = ["Player", "Dealer"]
     
     for i in range(len(table)):
         scoreCard = table[i].pop(0)
-        print(f'scorecard:{scoreCard}')
-        #need to put the score cards in a separate pile to display
         
         points = pointsDict.get(scoreCard[1])
         
@@ -137,26 +154,14 @@ def scoreCard(table, tablePoints, pointsDict):
             
         else:
             tablePoints[i] += points
+        
+        print(f'{tableList[i]} Points: {tablePoints[i]}')
+        showScoreCards(scoreCard)
+        
     
     return table, tablePoints
 
 
-
-#SHOW card FIFO order for table --> need to sort input (dealt cards)
-def showCards(table):
-    
-    #SUITS
-    hearts = chr(9829)
-    diamonds = chr(9830)
-    spades = chr(9824)
-    clubs = chr(9827)
-    
-    player, dealer = table
-    
-    return None
-  
-# test = [[('Spades', 'Ace')], [('Clubs', 2)]]
-# showCards(test)
 
 
 def playerMoveInput():
@@ -168,7 +173,7 @@ def playerMoveInput():
             assert(valid_move == "h" or valid_move == "s")
             
         except (AssertionError, ValueError):
-            print("Sorry, please enter h (hit) or s (stay)")
+            print("Sorry, please enter 'h' (hit) or 's' (stay)")
 
         else:
             if valid_move == "h":
@@ -195,8 +200,10 @@ def getMove(table, tablePoints, playDeck, cardPointsDict):
         
             table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
             
-            print(f"getmove table: {table}")
-            print(f"getmove tablepoints: {tablePoints}")
+            
+            
+            # print(f"getmove table: {table}")
+            # print(f"getmove tablepoints: {tablePoints}")
         
         else:
             print('stay')
@@ -233,6 +240,7 @@ def playCards(table, tablePoints, playDeck, cardPointsDict):
     table, playDeck = dealCards(table, playDeck)
         
     #add points to player/dealer hand
+    #do i add an extra variable here - list display cards to keep track through game of cards?
     table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
     
     
@@ -258,8 +266,8 @@ def main():
     #start play
     (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
     
-    print(f"main table: {mainTable}")
-    print(f"tablepoints: {mainTablePoints}")
+    # print(f"main table: {mainTable}")
+    # print(f"tablepoints: {mainTablePoints}")
     
     result = getMove(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
         
