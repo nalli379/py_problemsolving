@@ -1,24 +1,8 @@
 #blackjack game
 
-#dealer / player - interaction
-#shared deck of cards per round
-#try to get as close to 21 without going over
-#hit to take a card
-#stay to stop taking cards
-#when both dealer and player stay --> end round
-#show cards
-
-#RUNNING A GAME
-#player starts with 5000
-#place a bet at start of game
-#once cards been dealt you can double down,
-#that requires you to hit one more time
-#if you win --> win bet money
-#if you lose --> lose bet
-#if you doubledown --> win bet money * 2
-#if you have no money to make bet, out game
-
+from multiprocessing.sharedctypes import Value
 import random
+
 
 def createDeck():
     new_deck = []
@@ -47,7 +31,6 @@ def createDeck():
 def createcardPoints():
     cardPoints = {}
     specialcards = ["Jack", "Queen", "King"]
-    ace_card = 0
 
     cardPoints["Ace"] = 0
 
@@ -59,28 +42,6 @@ def createcardPoints():
 
     return cardPoints
 
-
-
-def doubleDownInput(valid_input, playerMoneyPot):
-    
-    if (playerMoneyPot - (valid_input * 2) <= 0):
-        return valid_input, playerMoneyPot
-    
-    while True:
-        
-        try:
-            valid_bet = (input("Do you want to double your bet? y/n ")).lower()
-            assert(valid_bet == "y" or valid_bet == "n")
-            
-        except (AssertionError, ValueError):
-            print("Sorry, please enter y (yes) or n (no)")
-
-        else:
-            
-            if valid_bet == "y":
-                valid_input *= 2
-            
-            return valid_input, playerMoneyPot
 
 
 
@@ -108,6 +69,31 @@ def playerBetInput(playerMoneyPot):
 
 
 
+
+def doubleDownInput(valid_input, playerMoneyPot):
+    
+    if (playerMoneyPot - (valid_input * 2) <= 0):
+        return valid_input, playerMoneyPot
+    
+    while True:
+        
+        try:
+            valid_bet = (input("Do you want to double your bet? y/n ")).lower()
+            assert(valid_bet == "y" or valid_bet == "n")
+            
+        except (AssertionError, ValueError):
+            print("Sorry, please enter y (yes) or n (no)")
+
+        else:
+            
+            if valid_bet == "y":
+                valid_input *= 2
+            
+            return valid_input, playerMoneyPot
+
+
+
+
 #DEAL for table
 def dealCards(table, playDeck):
     
@@ -118,21 +104,6 @@ def dealCards(table, playDeck):
     return table, playDeck
 
 
-
-def showScoreCards(scoreCard):
-    
-    #SUITS
-    suitDict = {"Hearts": chr(9829), "Diamonds": chr(9830), "Spades": chr(9824), "Clubs": chr(9827)}
-    rows = ['', '', '', '', '']
-    
-    suit, rank = scoreCard
-    rows[0] += ' ___  '
-    rows[1] += f'|{(str(rank)[0]).ljust(2)} | '
-    rows[2] += f'| {suitDict.get(suit)} | '
-    rows[3] += f'|_{(str(rank)[0]).rjust(2)}| '
-
-    for row in rows:
-        print(row)
 
 
 
@@ -146,7 +117,8 @@ def scoreCard(table, tablePoints, pointsDict):
         
         points = pointsDict.get(scoreCard[1])
         
-        if scoreCard[i] == 'Ace':
+        #changeable value for Ace
+        if scoreCard[1] == "Ace":
             if tablePoints[i] + 11 <= 21:
                 tablePoints[i] += 11
             else:
@@ -155,11 +127,33 @@ def scoreCard(table, tablePoints, pointsDict):
         else:
             tablePoints[i] += points
         
+        
+        print('*' * 10 + '\n')
         print(f'{tableList[i]} Points: {tablePoints[i]}')
         showScoreCards(scoreCard)
-        
-    
+         
     return table, tablePoints
+
+
+
+
+def showScoreCards(scoreCard):
+    
+    #SUITS
+    suitDict = {"Hearts": chr(9829), "Diamonds": chr(9830), "Spades": chr(9824), "Clubs": chr(9827)}
+    rows = ['', '', '', '', '']
+    
+    rankDict = {2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", 10: "10", "Jack": "J", "Queen": "Q", "King": "K", "Ace": "A"}
+    
+    
+    suit, rank = scoreCard
+    rows[0] += ' ___ '
+    rows[1] += f'|{(rankDict.get(rank)).ljust(2)} | '
+    rows[2] += f'| {suitDict.get(suit)} | '
+    rows[3] += f'|_{(rankDict.get(rank)).rjust(2)}| '
+
+    for row in rows:
+        print(row)
 
 
 
@@ -183,37 +177,91 @@ def playerMoveInput():
                 return False
 
 
+
+
+def checkScores(tablePoints):
+    
+    playerPoints, dealerPoints = tablePoints
+        
+    if playerPoints >= 21 or dealerPoints >= 21:
+        print('Game Over')
+        return True
+    
+    elif dealerPoints >= 17:
+        print('Dealer Stays')
+        return True
+    
+    else:
+        return False
+
+
+
+def playCards(table, tablePoints, playDeck, cardPointsDict):
+    
+    #deal cards
+    table, playDeck = dealCards(table, playDeck)
+        
+    #add points to player/dealer hand
+    #do i add an extra variable here - list display cards to keep track through game of cards?
+    table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
+    
+    
+    return table, tablePoints, playDeck
+   
+    
+    
     
 def getMove(table, tablePoints, playDeck, cardPointsDict):
     
     while True:
-        valid_move = playerMoveInput()
+        check_tableScores = checkScores(tablePoints)
         
-        #test that dealer has not gone over 17
-        #test that player has not gone over 21
+        if not check_tableScores:
         
-        if valid_move:
+            valid_move = playerMoveInput()
+                
+            if valid_move:
+                                
+                table, playDeck = dealCards(table, playDeck)
             
-            print('hit')
+                table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
             
-            table, playDeck = dealCards(table, playDeck)
-        
-            table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
-            
-            
-            
-            # print(f"getmove table: {table}")
-            # print(f"getmove tablepoints: {tablePoints}")
-        
+            else:
+                break
+           
         else:
-            print('stay')
             break
     
-    #calculate final points to declare win/draw/lose
-    return 0
+
+    return tablePoints
+
+
+
+
+def calculateScore(tablePoints, playerBet, playerMoneyPot):
     
+    playerPoints, dealerPoints = tablePoints
+    
+    if playerPoints == dealerPoints:
+        print('Player - Dealer Draw')
     
 
+    elif playerPoints <= 21 and playerPoints > dealerPoints:
+        print(f'Player wins: £{playerBet}')
+        playerMoneyPot += playerBet
+        
+        
+    else:
+        print(f'Player loses: £{playerBet}')
+        playerMoneyPot -= playerBet    
+
+    print(f'Player Money Pot remaining: £{playerMoneyPot}')
+    
+    print('NEWGAME' * 10 + '\n')
+    return playerMoneyPot
+
+
+    
 
 #EXECUTION 
 def new_game():
@@ -234,17 +282,46 @@ def new_game():
 
 
 
-def playCards(table, tablePoints, playDeck, cardPointsDict):
+
+def newGameInput(playerMoneyPot):
     
-    #deal cards
-    table, playDeck = dealCards(table, playDeck)
+    while True:
+        try:
+            newGameInput = (input("Do you want to play a new game? y/n")).lower()
+            assert(newGameInput == "y" or newGameInput == "n")
+    
+        except (AssertionError, ValueError):
+            print("Sorry, please enter y (yes) or n (no)")
         
-    #add points to player/dealer hand
-    #do i add an extra variable here - list display cards to keep track through game of cards?
-    table, tablePoints = scoreCard(table, tablePoints, cardPointsDict)
+        else:
+            if newGameInput == "y":
+                return True
+            
+            else:
+                return False
+
+
+
+
+def playGame(playerMoneyPot, cardPointsDict):
+    
+    #create structures to store player/dealer hand, points and playdeck
+    (mainTable, mainTablePoints, mainplayDeck) = new_game()
+    
+    #bet 
+    (playerBet, playerMoneyPot) = playerBetInput(playerMoneyPot)
+
+    #start play
+    (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
+    
+    mainTablePoints = getMove(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
+    
+    #calculate final points to declare win/draw/lose
+    winnings = calculateScore(mainTablePoints, playerBet, playerMoneyPot)
+    
+    return winnings
     
     
-    return table, tablePoints, playDeck
 
 
 
@@ -253,83 +330,17 @@ def main():
     #player starts with 5000 for main game
     playerMoneyPot = 5000
     
-    #dict stores card point values
+    #stores card point values
     cardPointsDict = createcardPoints()
-
-    #create structures to store player/dealer hand, points and playdeck
-    (mainTable, mainTablePoints, mainplayDeck) = new_game()
     
-    #bet 
-    (playerBet, playerMoneyPot) = playerBetInput(playerMoneyPot)
-
-    
-    #start play
-    (mainTable, mainTablePoints, mainplayDeck) = playCards(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
-    
-    # print(f"main table: {mainTable}")
-    # print(f"tablepoints: {mainTablePoints}")
-    
-    result = getMove(mainTable, mainTablePoints, mainplayDeck, cardPointsDict)
+    while playerMoneyPot > 0 and newGameInput(playerMoneyPot):
+        playerMoneyPot = playGame(playerMoneyPot, cardPointsDict)
         
-    
-    return 0
+        
+    return
 
 
 main()
-
-
-
-#BETTING
-#double down added to playerbet total
-#when player makes bet, money is checked against player total but not substracted
-
-#if the player wins the round
-    #add bet money
-    
-#if the player loses the round
-    #subtract bet money
-    
-#if the dealer/player draw
-    #do nothing
-
-
-
-
-#PLAY GAME
-#put two cards on each pile
-#show one card card[0]
-#show card face up/one card face down for player/dealer in illustration
-    #add points to player/dealer total
-#ask player if they want to double down
-    #if yes, double total 
-
-
-#NEW DEAL
-#does the player want to play or stay
-    #if player wants to play
-        #reveal card[1] in card pile
-        #add points to player total
-        #create new deal
-            
-    #if dealer total < 17, dealer plays a card
-        #if yes, reveal card[1] in card pile
-        #add points to dealer total
-        #create new deal
-
-    #if player wants to stay
-        #check dealer is < 17
-            #if yes dealer only plays
-            #if no calculate points
-
-
-#CALCULATE POINTS
-#compare player/dealer total
-    #if player wins
-        #return win
-    #if player draws
-        #return draw
-    #if player loses
-        #return lose    
 
 
 
