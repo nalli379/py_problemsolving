@@ -6,25 +6,14 @@ import random
         #value of ace varies per game
 
     #can hit to retrieve card
-    #can stay to stop play
-    
     #show cards 
-    
-    
-#create a dealer class (child)
-    #can hit cards when under 17 points
-    
-#creates a player class (child)
-    #creates a money pot for the person
-
-
 
 class tableHand ():
     def __init__(self):
         self.hand = []
         self.points = 0
     
-    #take card out of function and put in main
+    #take card deck out of function and put in main
     def hit(self, card):
         self.newcard = card
         self.hand.append(self.newcard)
@@ -69,8 +58,52 @@ class tableHand ():
             for row in rows:
                 print(row)
 
+
+#create a dealer class (child)
+    #can hit cards when under 17 points
+class Dealer(tableHand):
+    
+    def hit(self, card):
+        if self.points >= 17:
+            print('Dealer Stays')
+            
+        else:
+            self.newcard = card
+            self.hand.append(self.newcard)
+        
+        return self.hand
+
+
+
+#creates a player class (child)
+    #creates a money pot for the person
+    #bet methods    
+class Player(tableHand):
+    def __init__(self):
+        self.moneypot = 5000
+        super().__init__()
+    
+    #create functions to check a bet amount input (already test double down in main
+    #if the bet is possible, return true
+    def checkBet(self, bet):
+        if self.moneypot - bet < 0:
+            return False
+        else:
+            return True
     
     
+    #create a function to add bet amount to money pot with a win
+    def winBet(self, bet):
+        self.moneypot += bet
+        return self.moneypot
+    
+    #create a function to subtract bet amount to moneypot with a lose
+    def loseBet(self, bet):
+        self.moneypot -= bet
+        return self.moneypot
+    
+
+
 
 #create a pack of cards class
     #creates a pack of cards
@@ -96,6 +129,8 @@ class cardsDeck():
         for i in range(3):
             random.shuffle(self.newDeck)
 
+
+    ###check the append method!!!!
     def dealCards(self, table):
         self.table = table
       
@@ -128,7 +163,6 @@ class cardPoints():
             self.cardPoints[j] = 10
 
         
-    #write a method to retrieve single value from cardPoints
     def get(self, cardvalue):
         return self.cardPoints.get(cardvalue)
     
@@ -144,18 +178,37 @@ table = ([('Clubs', 'Ace')], [('Hearts', 2)])
 
 new.dealCards(table)
 
-player = tableHand()
+dealer = Dealer()
+player = Player()
+
+player.checkBet(400)
 
 
-player.hit(new.pop())
-print(player.calculatePoints(points))
-player.showHand()
 
-player.hit(new.pop())
-print(player.calculatePoints(points))
 
-player.showHand()
 
+# print('****')
+# dealer = Dealer()
+# print(dealer.points)
+# print(dealer.hand)
+# dealer.hit(new.pop())
+# print(dealer.calculatePoints(points))
+# dealer.hit(new.pop())
+# print(dealer.calculatePoints(points))
+# dealer.hit(new.pop())
+
+# print(player.moneypot)
+# print(player.hand)
+# print(player.points)
+
+# player.hit(new.pop())
+# print(player.calculatePoints(points))
+# player.showHand()
+
+# player.hit(new.pop())
+# print(player.calculatePoints(points))
+
+# player.showHand()
 
 
 # player.hit(new.pop())
