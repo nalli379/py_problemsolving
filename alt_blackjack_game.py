@@ -24,30 +24,50 @@ class tableHand ():
         self.hand = []
         self.points = 0
     
-    def hit(self, cardDeck):
-        self.newcard = cardDeck.pop()
+    #take card out of function and put in main
+    def hit(self, card):
+        self.newcard = card
         self.hand.append(self.newcard)
-        self.points = self.addPoints(self.newcard)
         return self.hand
     
-    def addPoints(self, card, cardPointsDict):
-        self.scoreCard = card[0][1]
-        print(cardPointsDict)
-        # self.cardpointsvalue = cardPointsDict.get(self.scoreCard)
+    
+    def calculatePoints(self, cardPointsDict):
         
-        # if self.scoreCard == "Ace":
-        #     if self.points + 11 <= 21:
-        #         self.points += 11
-        #     else:
-        #         self.points += 1
+        for card in self.hand:
+            self.scoreCard = card[1]    
+            self.cardPointsvalue = cardPointsDict.get(self.scoreCard)
+            
+            if self.scoreCard == "Ace":
+                if self.points + 11 <= 21:
+                    self.points += 11
+                else:
+                    self.points += 1
+            
+            else:
+                self.points += self.cardPointsvalue
         
-        # else:
-        #     self.points += self.cardpointsvalue
-        
-        # return self.points
+        return self.points
+            
+    
 
-    # def showHand(self):
-    #     return 0
+    def showHand(self):
+
+        rows = ['', '', '', '', '']
+        
+        for i, card in enumerate(self.hand):
+            suitDict = {"Hearts": chr(9829), "Diamonds": chr(9830), "Spades": chr(9824), "Clubs": chr(9827)}
+            
+            rankDict = {2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", 10: "10", "Jack": "J", "Queen": "Q", "King": "K", "Ace": "A"}
+            
+            
+            suit, rank = card
+            rows[0] += ' ___ '
+            rows[1] += f'|{(rankDict.get(rank)).ljust(2)} | '
+            rows[2] += f'| {suitDict.get(suit)} | '
+            rows[3] += f'|_{(rankDict.get(rank)).rjust(2)}| '
+
+            for row in rows:
+                print(row)
 
     
     
@@ -55,6 +75,7 @@ class tableHand ():
 #create a pack of cards class
     #creates a pack of cards
     #deals cards
+    #pops a card from the deck
     
 class cardsDeck():
     def __init__(self):
@@ -93,7 +114,6 @@ class cardsDeck():
 #create a points class
     #creates a points dictionary
     #scores points to the first card in a hand
-
 class cardPoints():
     
     def __init__(self):
@@ -106,8 +126,11 @@ class cardPoints():
         
         for j in self.specialcards:
             self.cardPoints[j] = 10
-    
+
+        
     #write a method to retrieve single value from cardPoints
+    def get(self, cardvalue):
+        return self.cardPoints.get(cardvalue)
     
     def __str__(self):
         return str(self.cardPoints)
@@ -121,10 +144,25 @@ table = ([('Clubs', 'Ace')], [('Hearts', 2)])
 
 new.dealCards(table)
 
-
 player = tableHand()
 
-player.addPoints([('Clubs', 'Ace')], points)
+
+player.hit(new.pop())
+print(player.calculatePoints(points))
+player.showHand()
+
+player.hit(new.pop())
+print(player.calculatePoints(points))
+
+player.showHand()
+
+
+
+# player.hit(new.pop())
+# player.addPoints(points)
+# player.hit(new.pop())
+# player.addPoints(points)
+
 
 
 
