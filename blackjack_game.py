@@ -1,6 +1,5 @@
 #blackjack game
 
-from multiprocessing.sharedctypes import Value
 import random
 
 
