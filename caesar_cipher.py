@@ -119,7 +119,8 @@ def main():
 
     return pyperclip.copy(cipher_message)
 
-main()
+if __name__ == "__main__":
+    main()
 
 
 
